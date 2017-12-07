@@ -18,7 +18,7 @@ defmodule Ak.Signup do
     if existing_match != nil do
       existing_match["name"]
     else
-      all_signup_pages = Ak.Api.stream("signuppage")
+      all_signup_pages = Ak.Api.stream("signuppage") |> Enum.to_list()
       Agent.update(__MODULE__, fn _ -> all_signup_pages end)
 
       match =

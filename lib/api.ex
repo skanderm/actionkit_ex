@@ -38,7 +38,7 @@ defmodule Ak.Api do
   defp process_response_body(text) do
     case Poison.decode(text) do
       {:ok, body} -> body
-      {:error, _raw, _} -> {:error, text}
+      {:error, _raw, _} -> text
     end
   end
 
