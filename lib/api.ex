@@ -38,12 +38,57 @@ defmodule Ak.Api do
   defp process_response_body(text) do
     case Poison.decode(text) do
       {:ok, body} -> body
-      {:error, _raw, _} -> text
+      _ -> text
     end
   end
 
-  def stream(url) do
-    %{body: ~m(objects)} = get(url)
-    objects
+  # -----------------------------------
+  # ---------- STREAM HELPERS ---------
+  # -----------------------------------
+  # If results exist, send them, passing only the tail
+  defp unfolder(%{"meta" => meta, "objects" => [head | tail]}) do
+    {head, %{"meta" => meta, "objects" => tail}}
+  end
+
+  # If results don't exist (because above would have matched),
+  # and meta.next is nil, we're done (base case)
+  defp unfolder(%{"meta" => %{"next" => nil}, "objects" => _}) do
+    nil
+  end
+
+  # If results don't exist (first clause matches), and next is not null, serve it
+  defp unfolder(%{"meta" => %{"next" => "/rest/v1/" <> url}, "objects" => _}) do
+    [core, params] = String.split(url, "?")
+    case get(core, [query: Plug.Conn.Query.decode(params)]).body do
+      %{"meta" => meta, "objects" => [head | tail]} ->
+        {head, %{"meta" => meta, "objects" => tail}}
+      _ ->
+        nil
+    end
+  end
+
+  # Handle errors
+  defp unfolder({:error, message}) do
+    message
+  end
+
+  @doc """
+  Wraps any Nationbuilder style paginatable endpoint in a stream for repeated fetching
+
+  For example, `Nb.Api.stream("people") |> Enum.take(500)` will make 5 requests
+  to Nationbuilders `/people`, using the token returned to fetch the next page.
+
+  Can be used for any Nationbuilder endpoint that has a response in the format
+  {
+    "next": "/api/v1/people?__nonce=3OUjEzI6iyybc1F3sk6YrQ&__token=ADGvBW9wM69kUiss1KqTIyVeQ5M6OwiL6ttexRFnHK9m",
+    "prev": null,
+    "results" [
+      ...
+    ]
+  }
+  """
+  def stream(url, opts \\ []) do
+    get(url, opts).body
+    |> Stream.unfold(&unfolder/1)
   end
 end

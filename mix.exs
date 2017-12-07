@@ -25,7 +25,8 @@ defmodule Actionkit.MixProject do
       {:httpotion, "~> 3.0.2"},
       {:poison, "~> 3.1"},
       {:timex, "~> 3.0"},
-      {:short_maps, "~> 0.1.2"}
+      {:short_maps, "~> 0.1.2"},
+      {:plug, "~> 1.0"}
     ]
   end
 end

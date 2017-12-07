@@ -14,7 +14,7 @@ defmodule Ak.Petition do
   def name_for_petition_with_slug(slug, list_partial \\ false) do
     existing_match =
       Agent.get(__MODULE__, fn list ->
-        matches = Enum.filter(list, &(&1["name"] == slug)) |> List.first()
+        Enum.filter(list, &(&1["name"] == slug)) |> List.first()
       end)
 
     if existing_match != nil do

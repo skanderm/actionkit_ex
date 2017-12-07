@@ -14,6 +14,7 @@ defmodule ActionkitTest do
   end
 
   test "signing a petition works" do
+    Ak.List.start_link
     Ak.Petition.start_link
     Ak.Petition.process_petition_sign("from-cosmic", %{email: "ben.paul.ryan.packer@gmail.com", phone: "5555555555", zip: "75225"})
   end
