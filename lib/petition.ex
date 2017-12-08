@@ -44,7 +44,7 @@ defmodule Ak.Petition do
   # attributes. A full list can be found here:
   # https://go.justicedemocrats.com/docs/manual/api/rest/actionprocessing.html?highlight=source#required-arguments
   def process_petition_sign(petition_slug, info, list_partial \\ false) do
-    slug = if list_partial, do: slugize(list_partial) <> petition_slug, else: petition_slug
+    slug = if list_partial, do: slugize(list_partial) <> "-" <> petition_slug, else: petition_slug
     name = name_for_petition_with_slug("external-" <> slug)
     Ak.Api.post("action", body: Map.merge(info, %{page: name}))
   end

@@ -6,17 +6,16 @@ defmodule Ak.Signup do
     Agent.start_link(fn -> [] end, name: __MODULE__)
   end
 
-  # Scrapes available signup pages, return the action attribute for the one
-  # matching &func/1, which is passed a map with a title attribute
-  # like Signup: John Heenan
-  def name_for_page_matching(func) do
+  # Scrapes available signup pages, return the one matching &func/1, which is
+  # passed a map with a title attribute like Signup: John Heenan
+  def page_matching(func) do
     existing_match =
       Agent.get(__MODULE__, fn list ->
         matches = Enum.filter(list, fn page -> func.(page) end) |> List.first()
       end)
 
     if existing_match != nil do
-      existing_match["name"]
+      existing_match
     else
       all_signup_pages = Ak.Api.stream("signuppage") |> Enum.to_list()
       Agent.update(__MODULE__, fn _ -> all_signup_pages end)
@@ -26,8 +25,13 @@ defmodule Ak.Signup do
         |> Enum.filter(fn page -> func.(page) end)
         |> List.first()
 
-      match["name"]
+      match
     end
+  end
+
+  def name_for_page_matching(func) do
+    match = page_matching(func)
+    match["name"]
   end
 
   # Info can have ~m(email phone source) as well as pretty standard address

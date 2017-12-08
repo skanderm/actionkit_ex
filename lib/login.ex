@@ -2,7 +2,7 @@ defmodule Ak.DialerLogin do
   import ShortMaps
 
   # Returns a login or nil
-  def existing_login_for_email(email) do
+  def existing_login_for_email(email, client) do
     %{body: ~m(objects)} = Ak.Api.get("user", query: ~m(email))
     user = List.first(objects)
 
@@ -12,13 +12,13 @@ defmodule Ak.DialerLogin do
 
       ~m(token) ->
         [_, user_id, _] = String.split(token, ".")
-        login_claimed_by_user_today(user_id)
+        login_claimed_by_user_today(user_id, client)
     end
   end
 
   # Returns a login or nil
-  def login_claimed_by_user_today(user) do
-    page = 30
+  def login_claimed_by_user_today(user, client) do
+    %{"id" => page} = Ak.Signup.page_matching(& &1["name"] == "claim-login-#{client}")
     %{body: ~m(objects)} = Ak.Api.get("action", query: ~m(user page))
 
     claimed_today =
@@ -33,8 +33,8 @@ defmodule Ak.DialerLogin do
     end
   end
 
-  def record_login_claimed(user_info, action_claimed) do
-    page = "claim-login"
+  def record_login_claimed(user_info, action_claimed, client) do
+    page = "claim-login-#{client}"
     Ak.Api.post("action", body: Map.merge(user_info, ~m(page action_claimed)))
   end
 end

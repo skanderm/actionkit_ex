@@ -3,8 +3,9 @@ defmodule ActionkitTest do
   doctest Ak
 
   test "login claiming works" do
-    Ak.DialerLogin.record_login_claimed(%{email: "ben.paul.ryan.packer@gmail.com", phone: "5555555555", zip: "75225"}, "JdVolunteer1")
-    login = Ak.DialerLogin.existing_login_for_email("ben.paul.ryan.packer@gmail.com")
+    Ak.Signup.start_link
+    Ak.DialerLogin.record_login_claimed(%{email: "ben.paul.ryan.packer@gmail.com", phone: "5555555555", zip: "75225"}, "JdVolunteer1", "jd")
+    login = Ak.DialerLogin.existing_login_for_email("ben.paul.ryan.packer@gmail.com", "jd")
     assert login == "JdVolunteer1"
   end
 
