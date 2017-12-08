@@ -37,8 +37,13 @@ defmodule Ak.Signup do
   # Info can have ~m(email phone source) as well as pretty standard address
   # attributes. A full list can be found here:
   # https://go.justicedemocrats.com/docs/manual/api/rest/actionprocessing.html?highlight=source#required-arguments
-  def process_signup(candidate, info) do
-    name = name_for_page_matching(fn ~m(title) -> String.contains?(title, candidate) and String.contains?(title, "Signup:") end)
+  def process_signup(list_partial, info) when is_string(list_partial) do
+    name = name_for_page_matching(fn ~m(title) -> String.contains?(title, list_partial) and String.contains?(title, "Signup:") end)
+    Ak.Api.post("action", body: Map.merge(info, %{page: name}))
+  end
+
+  def process_signup(matching_func, info) when is_function(matching_func) do
+    name = name_for_page_matching(matching_func)
     Ak.Api.post("action", body: Map.merge(info, %{page: name}))
   end
 end
