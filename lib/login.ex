@@ -54,7 +54,9 @@ defmodule Ak.DialerLogin do
     end)
 
     case List.first(matches) do
-      %{"user" => "/rest/v1/" <> user} -> Ak.Api.get(user)
+      %{"user" => "/rest/v1/" <> user} ->
+        %{body: body} = Ak.Api.get(user)
+        body
       nil -> nil
     end
   end
