@@ -50,7 +50,7 @@ defmodule Ak.DialerLogin do
       end)
 
     matches = Enum.filter(claimed_today, fn %{"fields" => %{"claimed" => login_claimed}} ->
-      login_claimed == login
+      String.downcase(login_claimed) == String.downcase(login)
     end)
 
     case List.first(matches) do
