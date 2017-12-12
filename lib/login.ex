@@ -37,4 +37,25 @@ defmodule Ak.DialerLogin do
     page = "claim-login-#{client}"
     Ak.Api.post("action", body: Map.merge(user_info, ~m(page action_claimed)))
   end
+
+  def who_claimed(client, login) do
+    %{"id" => page} = Ak.Signup.page_matching(& &1["name"] == "claim-login-#{client}")
+    order_by = "-created_at"
+
+    claimed_today =
+      Ak.Api.stream("action", query: ~m(page order_by))
+      |> Enum.take_while(fn ~m(created_at) ->
+        claimed_at = Ak.Helpers.in_est(created_at)
+        Timex.day(claimed_at) == Timex.day(Timex.now())
+      end)
+
+    matches = Enum.filter(claimed_today, fn %{"fields" => %{"claimed" => login_claimed}} ->
+      login_claimed == login
+    end)
+
+    case List.first(matches) do
+      %{"user" => "/rest/v1/" <> user} -> Ak.Api.get(user)
+      nil -> nil
+    end
+  end
 end
