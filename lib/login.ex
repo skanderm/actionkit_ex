@@ -54,9 +54,10 @@ defmodule Ak.DialerLogin do
     end)
 
     case List.first(matches) do
-      match = %{"user" => "/rest/v1/" <> user} ->
+      %{"user" => "/rest/v1/" <> user, "fields" => fields} ->
         %{body: body} = Ak.Api.get(user)
-        Map.put(body, "calling_from", match["fields"]["calling_from"])
+        calling_from = Map.get("fields", "calling_from", "unknown")
+        Map.put(body, "calling_from", calling_from)
       nil -> nil
     end
   end
