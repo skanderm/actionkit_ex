@@ -46,7 +46,7 @@ defmodule Ak.DialerLogin do
       Ak.Api.stream("action", query: ~m(page order_by))
       |> Enum.take_while(fn ~m(created_at) ->
         claimed_at = Ak.Helpers.in_est(created_at)
-        Timex.day(claimed_at) == Timex.day(Timex.now())
+        Timex.day(claimed_at) == Timex.day(Timex.now() |> Timex.shift(hours: -6))
       end)
 
     matches = Enum.filter(claimed_today, fn %{"fields" => %{"claimed" => login_claimed}} ->
