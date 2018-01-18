@@ -29,4 +29,7 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-import_config "secret.exs"
+config :actionkit,
+  base: System.get_env("AK_BASE"),
+  username: System.get_env("AK_USERNAME"),
+  password: System.get_env("AK_PASSWORD")

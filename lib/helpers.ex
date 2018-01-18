@@ -12,4 +12,10 @@ defmodule Ak.Helpers do
     est = Timex.Timezone.get("America/New_York")
     Timex.Timezone.convert(utc, est)
   end
+
+  def in_pst(timestamp) do
+    {:ok, utc, _} = isoify(timestamp) |> DateTime.from_iso8601()
+    pst = Timex.Timezone.get("America/Los_Angeles")
+    Timex.Timezone.convert(utc, pst)
+  end
 end
