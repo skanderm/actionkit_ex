@@ -6,6 +6,8 @@ defmodule Ak.Api do
   @username Application.get_env(:actionkit, :username)
   @password Application.get_env(:actionkit, :password)
 
+  IO.puts "[ak] Running Ak.Api with base #{@base}"
+
   # --------------- Process request ---------------
   defp process_url(url) do
     cond do
