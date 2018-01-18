@@ -2,18 +2,13 @@ defmodule Ak.Api do
   use HTTPotion.Base
   import ShortMaps
 
-  @base Application.get_env(:actionkit, :base)
-  @username Application.get_env(:actionkit, :username)
-  @password Application.get_env(:actionkit, :password)
-
-  IO.puts "[ak] Running Ak.Api with base #{@base}"
-
   # --------------- Process request ---------------
   defp process_url(url) do
+    base = Application.get_env(:actionkit, :base)
     cond do
-      String.ends_with?(url, "/") -> "#{@base}/rest/v1/#{url}"
-      String.length(url) == 0 -> "#{@base}/rest/v1/"
-      true -> "#{@base}/rest/v1/#{url}/"
+      String.ends_with?(url, "/") -> "#{base}/rest/v1/#{url}"
+      String.length(url) == 0 -> "#{base}/rest/v1/"
+      true -> "#{base}/rest/v1/#{url}/"
     end
   end
 
@@ -22,7 +17,9 @@ defmodule Ak.Api do
   end
 
   defp process_options(opts) do
-    Keyword.put(opts, :basic_auth, {@username, @password})
+    username = Application.get_env(:actionkit, :username)
+    password = Application.get_env(:actionkit, :password)
+    Keyword.put(opts, :basic_auth, {username, password})
   end
 
   defp process_request_body(body) when is_map(body) do
