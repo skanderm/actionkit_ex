@@ -56,7 +56,7 @@ defmodule Ak.DialerLogin do
 
     case List.first(matches) do
       %{"user" => "/rest/v1/" <> user, "fields" => fields} ->
-        %{body: body} = Ak.Api.get(user)
+        %{body: body = %{"phones" => phones}} = Ak.Api.get(user)
 
          phone_number =
            case List.last(phones) do
