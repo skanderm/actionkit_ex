@@ -34,9 +34,12 @@ defmodule Ak.DialerLogin do
     end
   end
 
-  def record_login_claimed(user_info, action_claimed, client) do
+  def record_login_claimed(user_info, action_claimed, client, should_subscribe \\ false) do
     page = "claim-login-#{client}"
-    Ak.Api.post("action", body: Map.merge(user_info, ~m(page action_claimed)))
+    body = Map.merge(user_info, ~m(page action_claimed))
+    body = if should_subscribe, do: Map.put(body, "opt_in", true), else: body
+
+    Ak.Api.post("action", body: body)
   end
 
   def who_claimed(client, login) do
