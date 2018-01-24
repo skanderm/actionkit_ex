@@ -57,8 +57,22 @@ defmodule Ak.DialerLogin do
     case List.first(matches) do
       %{"user" => "/rest/v1/" <> user, "fields" => fields} ->
         %{body: body} = Ak.Api.get(user)
+
+         phone_number =
+           case List.last(phones) do
+             "/rest/v1/" <> phone_uri ->
+               %{body: %{"normalized_phone" => phone_number}} = Ak.Api.get(phone_uri)
+
+             _ ->
+               nil
+           end
+
         calling_from = Map.get(fields, "calling_from", "unknown")
-        Map.put(body, "calling_from", calling_from)
+
+        body
+        |> Map.put("calling_from", calling_from)
+        |> Map.put("phone", phone_number)
+
       nil -> nil
     end
   end
