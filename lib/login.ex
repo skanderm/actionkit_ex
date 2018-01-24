@@ -62,6 +62,7 @@ defmodule Ak.DialerLogin do
            case List.last(phones) do
              "/rest/v1/" <> phone_uri ->
                %{body: %{"normalized_phone" => phone_number}} = Ak.Api.get(phone_uri)
+               phone_number
 
              _ ->
                nil
