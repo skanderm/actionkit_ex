@@ -22,7 +22,7 @@ defmodule Actionkit.MixProject do
   defp deps do
     [
       {:hackney, "~> 1.6.0"},
-      {:httpotion, "~> 3.0.2"},
+      {:httpotion, "~> 3.1.0"},
       {:poison, "~> 3.1"},
       {:timex, "~> 3.0"},
       {:short_maps, "~> 0.1.2"},
