@@ -18,7 +18,7 @@ defmodule Ak.DialerLogin do
 
   # Returns a login or nil
   def login_claimed_by_user_today(user, client) do
-    %{"id" => page} = Ak.Signup.page_matching(& &1["name"] == "claim-login-#{client}")
+    %{"id" => page} = Ak.Signup.page_matching(&(&1["name"] == "claim-login-#{client}"))
     order_by = "-created_at"
 
     claimed_by_user_today =
@@ -42,26 +42,32 @@ defmodule Ak.DialerLogin do
   end
 
   def who_claimed(client, login) do
-    %{"id" => page} = Ak.Signup.page_matching(& &1["name"] == "claim-login-#{client}")
+    %{"id" => page} = Ak.Signup.page_matching(&(&1["name"] == "claim-login-#{client}"))
     order_by = "-created_at"
 
-    matches =
+    match =
       Ak.Api.stream("action", query: ~m(page order_by))
-      |> Enum.take_while(fn action -> not matches_login(action, login) end)
+      |> Enum.reduce_while(nil, fn action, _ ->
+        if matches_login(action, login) do
+          {:halt, action}
+        else
+          {:cont, nil}
+        end
+      end)
 
-    case List.first(matches) do
+    case match do
       %{"user" => "/rest/v1/" <> user, "fields" => fields} ->
         %{body: body = %{"phones" => phones}} = Ak.Api.get(user)
 
-         phone_number =
-           case List.last(phones) do
-             "/rest/v1/" <> phone_uri ->
-               %{body: %{"normalized_phone" => phone_number}} = Ak.Api.get(phone_uri)
-               phone_number
+        phone_number =
+          case List.last(phones) do
+            "/rest/v1/" <> phone_uri ->
+              %{body: %{"normalized_phone" => phone_number}} = Ak.Api.get(phone_uri)
+              phone_number
 
-             _ ->
-               nil
-           end
+            _ ->
+              nil
+          end
 
         calling_from = Map.get(fields, "calling_from", "unknown")
 
@@ -69,7 +75,8 @@ defmodule Ak.DialerLogin do
         |> Map.put("calling_from", calling_from)
         |> Map.put("phone", phone_number)
 
-      nil -> nil
+      nil ->
+        nil
     end
   end
 
