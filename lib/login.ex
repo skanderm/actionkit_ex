@@ -69,7 +69,7 @@ defmodule Ak.DialerLogin do
               nil
           end
 
-        calling_from = Map.get(fields, "calling_from", "unknown")
+        calling_from = Map.get(fields, "calling_from", "does not exist")
 
         body
         |> Map.put("calling_from", calling_from)
