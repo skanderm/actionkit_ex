@@ -24,7 +24,6 @@ defmodule Ak.DialerLogin do
     claimed_by_user_today =
       Ak.Api.stream("action", query: ~m(page order_by))
       |> Enum.take_while(&claimed_today/1)
-      |> IO.inspect()
       |> Enum.filter(fn action -> matches_user(action, user) end)
 
     case List.first(claimed_by_user_today) do
