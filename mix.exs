@@ -21,10 +21,10 @@ defmodule Actionkit.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:hackney, "~> 1.6.0"},
+      {:hackney, "~> 1.18"},
       {:httpotion, "~> 3.1.0"},
       {:poison, "~> 3.1"},
-      {:timex, "~> 3.0"},
+      {:timex, "~> 3.7.9"},
       {:short_maps, "~> 0.1.2"},
       {:plug, "~> 1.0"}
     ]
